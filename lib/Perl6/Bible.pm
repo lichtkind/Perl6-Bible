@@ -18,7 +18,6 @@ Please install Perl6::Doc to have even more Perl 6 Documentation.
 _
 }
 
-
 __DATA__
 
 =encoding utf8
@@ -36,7 +35,7 @@ please use L<Perl6::Doc> instead
 This Copyright applies only to the C<Perl6::Bible> Perl software
 distribution, not the documents bundled within.
 
-Copyright (c) 2007. Ingy Döt Net. All rights reserved.
+Copyright (c) 2007. Ingy DÃ¶t Net. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
