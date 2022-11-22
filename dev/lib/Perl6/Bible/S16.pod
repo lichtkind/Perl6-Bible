@@ -1,0 +1,506 @@
+
+=encoding utf8
+
+=head1 Title
+
+DRAFT: Synopsis 16: IPC / IO / Signals
+
+=head1 Version
+
+ Author:        Largely, the authors of the related Perl 5 docs.
+ Maintainer:    Larry Wall <larry@wall.org>
+ Contributions: Mark Stosberg <mark@summersault.com>
+ Date:          12 Sep 2006
+ Last Modified: 1 May 2007
+ Version:       17
+
+This is a draft document. Many of these functions will work as in Perl
+5, except we're trying to rationalize everything into packages.  For
+now you can assume most of the important functions will automatically
+be in the * namespace.  However, with IO operations in particular,
+many of them are really methods on an IO handle, and if there is a
+corresponding global function, it's merely an exported version of
+the method.
+
+As a starting point, you can help by finding the official Perl 5 documentation
+for these functions and copying it here. 
+
+=head1 Filehandles, files, and directories
+
+=over 4
+
+=item :X
+
+=over 8
+
+=item IO ~~ :X
+X<:r>X<:w>X<:x>X<:o>X<:R>X<:W>X<:X>X<:O>X<:e>X<:z>X<:s>X<:f>X<:d>X<:l>X<:p>
+X<:S>X<:b>X<:c>X<:t>X<:u>X<:g>X<:k>X<:T>X<:B>X<:M>X<:A>X<:C>
+
+=item EXPR ~~ :X
+
+  $file.:X
+  $file ~~ :X
+
+A file test, where X is one of the letters listed below.  This unary
+operator takes one argument, either a filename or a filehandle, and
+tests the associated file to see if something is true about it.
+
+A Pair used as a pattern is treated as a file test.
+
+    :r	File is readable by effective uid/gid.
+    :w	File is writable by effective uid/gid.
+    :x	File is executable by effective uid/gid.
+    :o	File is owned by effective uid.
+
+    :R	File is readable by real uid/gid.
+    :W	File is writable by real uid/gid.
+    :X	File is executable by real uid/gid.
+    :O	File is owned by real uid.
+
+    :e	File exists.
+    :z	File has zero size (is empty).
+    :s	File has nonzero size (returns size in bytes).
+
+    :f	File is a plain file.
+    :d	File is a directory.
+    :l	File is a symbolic link.
+    :p	File is a named pipe (FIFO), or Filehandle is a pipe.
+    :S	File is a socket.
+    :b	File is a block special file.
+    :c	File is a character special file.
+    :t	Filehandle is opened to a tty.
+
+    :u	File has setuid bit set.
+    :g	File has setgid bit set.
+    :k	File has sticky bit set.
+
+    :T	File is an ASCII text file (heuristic guess).
+    :B	File is a "binary" file (opposite of :T).
+
+    :M	Script start time minus file modification time, in days.
+    :A	Same for access time.
+    :C	Same for inode change time (Unix, may differ for other platforms)
+
+The interpretation of the file permission operators C<:r>, C<:R>,
+C<:w>, C<:W>, C<:x>, and C<:X> is by default based solely on the mode
+of the file and the uids and gids of the user.  There may be other
+reasons you can't actually read, write, or execute the file.  Such
+reasons may be for example network filesystem access controls, ACLs
+(access control lists), read-only filesystems, and unrecognized
+executable formats.
+
+Also note that, for the superuser on the local filesystems, the C<:r>,
+C<:R>, C<:w>, and C<:W> tests always return 1, and C<:x> and C<:X> return 1
+if any execute bit is set in the mode.  Scripts run by the superuser
+may thus need to do a stat() to determine the actual mode of the file,
+or temporarily set their effective uid to something else.
+
+If you are using ACLs, there is a pragma called C<filetest> that may
+produce more accurate results than the bare stat() mode bits.
+When under the C<use filetest 'access'> the above-mentioned filetests
+will test whether the permission can (not) be granted using the
+access() family of system calls.  Also note that the C<:x> and C<:X> may
+under this pragma return true even if there are no execute permission
+bits set (nor any extra execute permission ACLs).  This strangeness is
+due to the underlying system calls' definitions.  Read the
+documentation for the C<filetest> pragma for more information.
+
+The C<:T> and C<:B> switches work as follows.  The first block or so of the
+file is examined for odd characters such as strange control codes or
+characters with the high bit set.  If too many strange characters (>30%)
+are found, it's a C<:B> file; otherwise it's a C<:T> file.  Also, any file
+containing null in the first block is considered a binary file.  If C<:T>
+or C<:B> is used on a filehandle, the current IO buffer is examined
+rather than the first block.  Both C<:T> and C<:B> return true on a null
+file, or a file at EOF when testing a filehandle.  Because you have to
+read a file to do the C<:T> test, on most occasions you want to use a C<:f>
+against the file first, as in C<next unless $file ~~ :f  && $file ~~ :T >.
+
+You can test multiple features using junctions:
+
+  if -$filename ~~ :r & :w & :x  {...}
+
+Or pass multiple tests together in OO style:
+ 
+  if $filename.TEST(:e,:x) {...}
+
+=item chown
+
+    our Int multi chown ($uid = -1, $gid = -1, *@files)
+
+Changes the owner (and group) of a list of files.  The first
+two elements of the list must be the numeric uid and gid, in
+that order.  A value of -1 in either position is interpreted by
+most systems to leave that value unchanged.  Returns the number
+of files successfully changed.
+
+    $count = chown $uid, $gid, ’foo’, ’bar’;
+    chown $uid, $gid, @filenames;
+
+On systems that support C<fchown>, you might pass file handles
+among the files.  On systems that don’t support C<fchown>, passing
+file handles produces a fatal error at run time.
+
+Here’s an example that looks up nonnumeric uids in the passwd
+file:
+
+   $user = prompt "User: ";
+   $pattern = prompt "Files: ";
+
+   ($login,$pass,$uid,$gid) = getpwnam($user)
+       or die "$user not in passwd file";
+
+   @ary = glob($pattern);      # expand filenames
+   chown $uid, $gid, @ary;
+
+On most systems, you are not allowed to change the ownership of
+the file unless you’re the superuser, although you should be
+able to change the group to any of your secondary groups.  On
+insecure systems, these restrictions may be relaxed, but this
+is not a portable assumption.  On POSIX systems, you can detect
+this condition this way:
+
+    use POSIX qw(sysconf _PC_CHOWN_RESTRICTED);
+    $can_chown_giveaway = not sysconf(_PC_CHOWN_RESTRICTED);
+
+=item chmod LIST
+X<chmod> X<permission> X<mode>
+
+Changes the permissions of a list of files.  The first element of the
+list must be the numerical mode, which should probably be an octal
+number, and which definitely should I<not> be a string of octal digits:
+C<0o644> is okay, C<0644> is not.  Returns the number of files
+successfully changed.
+
+    $cnt = chmod 0o755, 'foo', 'bar';
+    chmod 0o755, @executables;
+    $mode = '0644'; chmod $mode, 'foo';      # !!! sets mode to --w----r-T
+    $mode = '0o644'; chmod $mode, 'foo';     # this is better
+    $mode = 0o644;   chmod $mode, 'foo';     # this is best
+
+=item close IO
+
+=item IO.close
+
+Closes the file or pipe associated with the file handle, returning
+true only if IO buffers are successfully flushed and closes the system
+file descriptor.  Closes the currently selected filehandle if the
+argument is omitted.
+
+You don't have to close IO if you are immediately going to do
+another C<open> on it, because C<open> will close it for you.  (See
+C<open>.)  However, an explicit C<close> on an input file resets the line
+counter (C<$.>), while the implicit close done by C<open> does not.
+
+If the file handle came from a piped open, C<close> will additionally
+return false if one of the other system calls involved fails, or if the
+program exits with non-zero status.  (If the only problem was that the
+program exited non-zero, C<$!> will be set to C<0>.)  Closing a pipe
+also waits for the process executing on the pipe to complete, in case you
+want to look at the output of the pipe afterwards, and
+implicitly puts the exit status value of that command into C<$!>.
+
+=item connect
+
+ my $fh = connect($hostname, 80);
+
+Attempts to connect to a remote host and returns an IO handle if successful.
+The call fails with an exception if it cannot connect.
+
+=item IO.fcntl
+
+Available only as a handle method.
+
+=item glob
+
+=item IO.ioctl
+
+Available only as a handle method.
+
+=item link
+
+=item IO.listen
+
+Available only as a handle method.
+
+=item lstat
+
+Returns a stat buffer.  If the lstat succeeds, the stat buffer evaluates
+to true, and additional file tests may be performed on the value.  If
+the stat fails, all subsequent tests on the stat buffer also evaluate
+to false.
+
+=item mkdir
+
+=item IO.name
+
+The C<.name> method returns the name of the file/socket/uri the handle
+was opened with, if known.  Returns undef otherwise.  There is no
+corresponding C<name()> function.
+
+=item open
+
+    # Read
+    my $fh = open($filename);
+
+    # Write
+    my $fh = open($filename, :w);
+
+=item IO.fdopen
+
+    our IO method fdopen(Int $fd)
+
+Associate an IO object with an already-open file descriptor,
+presumably passed in from the parent process.
+
+=item IO::Dir::open EXPR
+
+  my $dir = IO::Dir::open('.');
+
+Opens a directory named EXPR for processing.  Makes the directory looks like
+a list of autochomped lines, so just use ordinary IO operators after the open.
+
+=item readlink
+
+=item rename
+
+=item rmdir FILENAME
+X<rmdir> X<rd> X<directory, remove>
+
+=item rmdir
+
+Deletes the directory specified by FILENAME if that directory is
+empty.  If it succeeds it returns true, otherwise it returns false and
+sets C<$!> (errno).  If FILENAME is omitted, uses C<$_>.
+
+=item stat
+
+=item IO.stat
+
+Returns a stat buffer.  If the lstat succeeds, the stat buffer evaluates
+to true, and additional file tests may be performed on the value.  If
+the stat fails, all subsequent tests on the stat buffer also evaluate
+to false.
+
+=item symlink
+
+=item syscall
+
+=item sysopen
+
+=item umask
+
+=item unlink LIST
+X<unlink> X<delete> X<remove> X<rm>
+
+=item unlink
+
+Deletes a list of files.  Returns the number of files successfully
+deleted.
+
+    $cnt = unlink 'a', 'b', 'c';
+
+Be warned that unlinking a directory can inflict damage on your filesystem.
+Finally, using C<unlink> on directories is not supported on many operating
+systems.  Use C<rmdir> instead.
+
+It is an error to use bare C<unlink> without arguments.
+
+=item utime
+
+=back
+
+=head1 Input and Output
+
+=over 4
+
+=item getc
+
+    our Bool method getc (IO $self: *@LIST)
+
+Returns the next character from the input stream attached to IO,
+or the undefined value at end of file, or if there was an error (in
+the latter case C<$!> is set). 
+
+=item print
+
+    our Bool method print (IO $self: *@LIST)
+    our Bool multi print (*@LIST)
+    our Bool method print (Str $self: IO $io)
+
+Prints a string or a list of strings.  Returns Bool::True if
+successful, Failure otherwise.  The IO handle, if supplied, must be
+an object that supports I/O.  Indirect objects in Perl 6 must always
+be followed by a colon, and any indirect object more complicated than
+a variable should be put into parentheses.
+
+If IO is omitted, prints to C<$*DEFOUT>, which is aliased to C<$*OUT>
+when the program starts but may be temporarily or permanently rebound to
+some other file handle.  The form with leading dot prints C<$_> to C<$*DEFOUT>
+unless an explicit filehandle is supplied.
+
+It is a compiler error to use a bare C<print> without arguments.
+(However, it's fine if you have an explicit argument list that evaluates to
+the empty list at runtime.)
+
+There is are no variables corresponding to Perl 5's C<$,> and
+C<$\> variables.  Use C<join> to interpose separators; use filehandle
+properties to change line endings.
+
+=item say
+
+    our Bool method say (IO $self: *@LIST)
+    our Bool multi say (*@LIST)
+    our Bool method say (Str $self: IO $io)
+
+This is identical to print() except that it auto-appends a newline after
+the final argument.
+
+    Was:    print "Hello, world!\n";
+    Now:    say   "Hello, world!";
+
+As with C<print>, it is a compiler error to use a bare C<say> without
+arguments.
+
+=item printf
+
+    our Bool method printf (IO $self: Str $fmt, *@LIST)
+    our Bool multi printf (Str $fmt, *@LIST)
+
+The function form works as in Perl 5 and always prints to $*DEFOUT.
+The method form uses IO handles as objects, not formats.
+
+=back
+
+=head1 Unfiled
+
+=over 4
+
+=item IO.fileno
+
+=item IO.flock
+
+=item IO.getpeername
+
+=item IO.eof
+
+=item IO.accept
+
+=item /[get|set][host|net|proto|serv|sock].*/
+
+=item alarm
+
+=item IO.bind
+
+=item IO.binmode
+
+=item IO.lines
+
+    our List multi method lines (IO $handle:) is export;
+    our List multi lines (Str $filename);
+
+Returns all the lines of a file as a (lazy) List regardless of context.
+See also C<slurp>.
+
+=item pipe
+
+Gone, see Pipe.pair
+
+=item prompt
+
+    our Str prompt (Str $prompt)
+
+=item IO.read
+
+=item IO.readline
+
+=item Str.readpipe
+
+=item IO.recv
+
+=item IO.seek
+
+=item select(both)
+
+Gone.  (Note: for subsecond sleep, just use sleep with a fractional argument.)
+
+=item IO.send
+
+=item IO.setsockopt
+
+=item IO.shutdown
+
+=item IO.slurp
+
+    our Item multi method slurp (IO $handle: *%opts) is export;
+    our Item multi slurp (Str $filename, *%opts);
+
+Slurps the entire file into a Str or Buf regardless of context.
+(See also C<lines>.)  Whether a Str or Buf is returned depends on
+the options.
+
+=item socket
+
+=item socketpair
+
+Gone, see Socket.pair
+
+=item IO.sysread
+
+=item IO.sysseek
+
+=item IO.syswrite
+
+=item IO.tell
+
+=item IO.truncate
+
+=item warn LIST
+
+=item Str.warn
+
+Prints a warning just like Perl 5, except that it is always sent to
+the object in $*DEFERR, which is just standard error ($*ERR).
+
+=item Pipe.to
+
+    our IO method to(Str $command, *%opts)
+
+Opens a one-way pipe writing to $command.  IO redirection for
+stderr is specified with :err(IO) or :err<Str>.  Other IO redirection
+is done with feed operators. XXX how to specify "2>&1"?
+
+=item Pipe.from
+
+    our IO method from(Str $command, *%opts)
+
+Opens a one-way pipe reading from $command.  IO redirection for
+stderr is specified with :err(IO) or :err<Str>.  Other IO redirection
+is done with feed operators. XXX how to specify "2>&1"?
+
+=item Pipe.pair
+
+    our List of IO method pair()
+
+A wrapper for pipe(2), returns a pair of IO objects representing the
+reader and writer ends of the pipe.
+
+   ($r, $w) = Pipe.pair;
+
+=item Socket.pair
+
+    our List of IO method pair(Int $domain, Int $type, Int $protocol)
+
+A wrapper for socketpair(2), returns a pair of IO objects representing the
+reader and writer ends of the socket.
+
+   use Socket;
+   ($r, $w) = Socket.pair(AF_UNIX, SOCK_STREAM, PF_UNSPEC);
+
+=back
+
+=head1 Additions
+
+Please post errors and feedback to perl6-language.  If you are making
+a general laundry list, please separate messages by topic.
