@@ -2,7 +2,7 @@
 
 =head1 TITLE
 
-Apocalypse 5: Pattern Matching
+Apocalypse_5 - Pattern Matching
 
 =head1 AUTHOR
 

@@ -454,6 +454,8 @@ Specifies a criteria for the version requirement
 
 This allows nesting of the above expressions
 
+=back
+
 =head3 Basic notation:
 
     a, b                        # a AND b

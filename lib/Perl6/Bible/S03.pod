@@ -2,7 +2,7 @@
 
 =head1 TITLE
 
-Synopsis 3: Perl 6 Operators
+Synopsis_3 - Perl 6 Operators
 
 =head1 AUTHOR
 

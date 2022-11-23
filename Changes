@@ -1,7 +1,7 @@
-version: 0.4
-date: Sun Dec 31
+version: 0.39
+date: Tue Nov 22 23:30 2022
 changes:
-- readded compile tests
+- fix POD
 ---
 version: 0.38
 date: Tue Nov 22 23:30 2022

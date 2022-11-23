@@ -3,7 +3,7 @@
 
 =head1 Title
 
-DRAFT: Synopsis 16: IPC / IO / Signals
+DRAFT: Synopsis_16 - IPC / IO / Signals
 
 =head1 Version
 
@@ -27,17 +27,16 @@ for these functions and copying it here.
 
 =head1 Filehandles, files, and directories
 
-=over 4
 
-=item :X
+=head2 :X
 
-=over 8
 
-=item IO ~~ :X
+=head2 IO ~~ :X
+
 X<:r>X<:w>X<:x>X<:o>X<:R>X<:W>X<:X>X<:O>X<:e>X<:z>X<:s>X<:f>X<:d>X<:l>X<:p>
 X<:S>X<:b>X<:c>X<:t>X<:u>X<:g>X<:k>X<:T>X<:B>X<:M>X<:A>X<:C>
 
-=item EXPR ~~ :X
+=head2 EXPR ~~ :X
 
   $file.:X
   $file ~~ :X
@@ -125,7 +124,7 @@ Or pass multiple tests together in OO style:
  
   if $filename.TEST(:e,:x) {...}
 
-=item chown
+=head2 chown
 
     our Int multi chown ($uid = -1, $gid = -1, *@files)
 
@@ -164,7 +163,7 @@ this condition this way:
     use POSIX qw(sysconf _PC_CHOWN_RESTRICTED);
     $can_chown_giveaway = not sysconf(_PC_CHOWN_RESTRICTED);
 
-=item chmod LIST
+=head2 chmod LIST
 X<chmod> X<permission> X<mode>
 
 Changes the permissions of a list of files.  The first element of the
@@ -179,9 +178,9 @@ successfully changed.
     $mode = '0o644'; chmod $mode, 'foo';     # this is better
     $mode = 0o644;   chmod $mode, 'foo';     # this is best
 
-=item close IO
+=head2 close IO
 
-=item IO.close
+=head2 IO.close
 
 Closes the file or pipe associated with the file handle, returning
 true only if IO buffers are successfully flushed and closes the system
@@ -201,45 +200,45 @@ also waits for the process executing on the pipe to complete, in case you
 want to look at the output of the pipe afterwards, and
 implicitly puts the exit status value of that command into C<$!>.
 
-=item connect
+=head2 connect
 
  my $fh = connect($hostname, 80);
 
 Attempts to connect to a remote host and returns an IO handle if successful.
 The call fails with an exception if it cannot connect.
 
-=item IO.fcntl
+=head2 IO.fcntl
 
 Available only as a handle method.
 
-=item glob
+=head2 glob
 
-=item IO.ioctl
-
-Available only as a handle method.
-
-=item link
-
-=item IO.listen
+=head2 IO.ioctl
 
 Available only as a handle method.
 
-=item lstat
+=head2 link
+
+=head2 IO.listen
+
+Available only as a handle method.
+
+=head2 lstat
 
 Returns a stat buffer.  If the lstat succeeds, the stat buffer evaluates
 to true, and additional file tests may be performed on the value.  If
 the stat fails, all subsequent tests on the stat buffer also evaluate
 to false.
 
-=item mkdir
+=head2 mkdir
 
-=item IO.name
+=head2 IO.name
 
 The C<.name> method returns the name of the file/socket/uri the handle
 was opened with, if known.  Returns undef otherwise.  There is no
 corresponding C<name()> function.
 
-=item open
+=head2 open
 
     # Read
     my $fh = open($filename);
@@ -247,54 +246,56 @@ corresponding C<name()> function.
     # Write
     my $fh = open($filename, :w);
 
-=item IO.fdopen
+=head2 IO.fdopen
 
     our IO method fdopen(Int $fd)
 
 Associate an IO object with an already-open file descriptor,
 presumably passed in from the parent process.
 
-=item IO::Dir::open EXPR
+=head2 IO::Dir::open EXPR
 
   my $dir = IO::Dir::open('.');
 
 Opens a directory named EXPR for processing.  Makes the directory looks like
 a list of autochomped lines, so just use ordinary IO operators after the open.
 
-=item readlink
+=head2 readlink
 
-=item rename
+=head2 rename
 
-=item rmdir FILENAME
+=head2 rmdir FILENAME
+
 X<rmdir> X<rd> X<directory, remove>
 
-=item rmdir
+=head2 rmdir
 
 Deletes the directory specified by FILENAME if that directory is
 empty.  If it succeeds it returns true, otherwise it returns false and
 sets C<$!> (errno).  If FILENAME is omitted, uses C<$_>.
 
-=item stat
+=head2 stat
 
-=item IO.stat
+=head2 IO.stat
 
 Returns a stat buffer.  If the lstat succeeds, the stat buffer evaluates
 to true, and additional file tests may be performed on the value.  If
 the stat fails, all subsequent tests on the stat buffer also evaluate
 to false.
 
-=item symlink
+=head2 symlink
 
-=item syscall
+=head2 syscall
 
-=item sysopen
+=head2 sysopen
 
-=item umask
+=head2 umask
 
-=item unlink LIST
+=head2 unlink LIST
+
 X<unlink> X<delete> X<remove> X<rm>
 
-=item unlink
+=head2 unlink
 
 Deletes a list of files.  Returns the number of files successfully
 deleted.
@@ -307,15 +308,11 @@ systems.  Use C<rmdir> instead.
 
 It is an error to use bare C<unlink> without arguments.
 
-=item utime
-
-=back
+=head2 utime
 
 =head1 Input and Output
 
-=over 4
-
-=item getc
+=head2 getc
 
     our Bool method getc (IO $self: *@LIST)
 
@@ -323,7 +320,7 @@ Returns the next character from the input stream attached to IO,
 or the undefined value at end of file, or if there was an error (in
 the latter case C<$!> is set). 
 
-=item print
+=head2 print
 
     our Bool method print (IO $self: *@LIST)
     our Bool multi print (*@LIST)
@@ -348,7 +345,7 @@ There is are no variables corresponding to Perl 5's C<$,> and
 C<$\> variables.  Use C<join> to interpose separators; use filehandle
 properties to change line endings.
 
-=item say
+=head2 say
 
     our Bool method say (IO $self: *@LIST)
     our Bool multi say (*@LIST)
@@ -363,7 +360,7 @@ the final argument.
 As with C<print>, it is a compiler error to use a bare C<say> without
 arguments.
 
-=item printf
+=head2 printf
 
     our Bool method printf (IO $self: Str $fmt, *@LIST)
     our Bool multi printf (Str $fmt, *@LIST)
@@ -371,31 +368,27 @@ arguments.
 The function form works as in Perl 5 and always prints to $*DEFOUT.
 The method form uses IO handles as objects, not formats.
 
-=back
-
 =head1 Unfiled
 
-=over 4
+=head2 IO.fileno
 
-=item IO.fileno
+=head2 IO.flock
 
-=item IO.flock
+=head2 IO.getpeername
 
-=item IO.getpeername
+=head2 IO.eof
 
-=item IO.eof
+=head2 IO.accept
 
-=item IO.accept
+=head2 /[get|set][host|net|proto|serv|sock].*/
 
-=item /[get|set][host|net|proto|serv|sock].*/
+=head2 alarm
 
-=item alarm
+=head2 IO.bind
 
-=item IO.bind
+=head2 IO.binmode
 
-=item IO.binmode
-
-=item IO.lines
+=head2 IO.lines
 
     our List multi method lines (IO $handle:) is export;
     our List multi lines (Str $filename);
@@ -403,35 +396,35 @@ The method form uses IO handles as objects, not formats.
 Returns all the lines of a file as a (lazy) List regardless of context.
 See also C<slurp>.
 
-=item pipe
+=head2 pipe
 
 Gone, see Pipe.pair
 
-=item prompt
+=head2 prompt
 
     our Str prompt (Str $prompt)
 
-=item IO.read
+=head2 IO.read
 
-=item IO.readline
+=head2 IO.readline
 
-=item Str.readpipe
+=head2 Str.readpipe
 
-=item IO.recv
+=head2 IO.recv
 
-=item IO.seek
+=head2 IO.seek
 
-=item select(both)
+=head2 select(both)
 
 Gone.  (Note: for subsecond sleep, just use sleep with a fractional argument.)
 
-=item IO.send
+=head2 IO.send
 
-=item IO.setsockopt
+=head2 IO.setsockopt
 
-=item IO.shutdown
+=head2 IO.shutdown
 
-=item IO.slurp
+=head2 IO.slurp
 
     our Item multi method slurp (IO $handle: *%opts) is export;
     our Item multi slurp (Str $filename, *%opts);
@@ -440,30 +433,30 @@ Slurps the entire file into a Str or Buf regardless of context.
 (See also C<lines>.)  Whether a Str or Buf is returned depends on
 the options.
 
-=item socket
+=head2 socket
 
-=item socketpair
+=head2 socketpair
 
 Gone, see Socket.pair
 
-=item IO.sysread
+=head2 IO.sysread
 
-=item IO.sysseek
+=head2 IO.sysseek
 
-=item IO.syswrite
+=head2 IO.syswrite
 
-=item IO.tell
+=head2 IO.tell
 
-=item IO.truncate
+=head2 IO.truncate
 
-=item warn LIST
+=head2 warn LIST
 
-=item Str.warn
+=head2 Str.warn
 
 Prints a warning just like Perl 5, except that it is always sent to
 the object in $*DEFERR, which is just standard error ($*ERR).
 
-=item Pipe.to
+=head2 Pipe.to
 
     our IO method to(Str $command, *%opts)
 
@@ -471,7 +464,7 @@ Opens a one-way pipe writing to $command.  IO redirection for
 stderr is specified with :err(IO) or :err<Str>.  Other IO redirection
 is done with feed operators. XXX how to specify "2>&1"?
 
-=item Pipe.from
+=head2 Pipe.from
 
     our IO method from(Str $command, *%opts)
 
@@ -479,7 +472,7 @@ Opens a one-way pipe reading from $command.  IO redirection for
 stderr is specified with :err(IO) or :err<Str>.  Other IO redirection
 is done with feed operators. XXX how to specify "2>&1"?
 
-=item Pipe.pair
+=head2 Pipe.pair
 
     our List of IO method pair()
 
@@ -488,7 +481,7 @@ reader and writer ends of the pipe.
 
    ($r, $w) = Pipe.pair;
 
-=item Socket.pair
+=head2 Socket.pair
 
     our List of IO method pair(Int $domain, Int $type, Int $protocol)
 
@@ -498,7 +491,6 @@ reader and writer ends of the socket.
    use Socket;
    ($r, $w) = Socket.pair(AF_UNIX, SOCK_STREAM, PF_UNSPEC);
 
-=back
 
 =head1 Additions
 

@@ -2,7 +2,7 @@
 
 =head1 TITLE
 
-Apocalypse 1: The Ugly, the Bad, and the Good
+Apocalypse_1 - The Ugly, the Bad, and the Good
 
 =head1 AUTHOR
 

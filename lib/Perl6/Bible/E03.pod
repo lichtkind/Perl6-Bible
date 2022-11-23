@@ -2,7 +2,7 @@
 
 =head1 TITLE
 
-Exegesis 3: Operators
+Exegesis_3 - Operators
 
 =head1 AUTHOR
 

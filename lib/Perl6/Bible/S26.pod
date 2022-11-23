@@ -1,14 +1,10 @@
-=begin pod
+=pod
 
-=for comment
-    This file is deliberately specified in Perl 6 Pod format
-    Clearly a Perl 6 -> Perl 5 documentation translator is a high priority ;-)
-
+=encoding utf8
 
 =head1 TITLE
 
-Synopsis 26 - Documentation
-
+Synopsis_26 - Documentation
 
 =head1 AUTHOR
 
@@ -17,7 +13,6 @@ Damian Conway <L<C<damian@conway.org>|mailto:damian@conway.org>>
 
 =head1 VERSION
 
-=table
     Maintainer:     Damian Conway
     Date:           9 Apr 2005
     Last Modified:  25 Apr 2007
@@ -70,7 +65,6 @@ always reverts to "ambient" at the end of each Pod directive or block.
 To cause the parser to remain in Pod mode, you must enclose the desired
 Pod region in a C<pod> block:
 
-=begin code :allow<B>
     B<=begin pod>
 
     =head1 A heading
@@ -80,7 +74,6 @@ Pod region in a C<pod> block:
         $this = pod('also');  # Specifically, a code block
 
     B<=end pod>
-=end code
 
 Alternatively you can indicate an entire file contains only Pod, by
 giving it a C<.pod> suffix.

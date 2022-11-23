@@ -1,6 +1,6 @@
 =head1 TITLE
 
-Exegesis 4: Syntax
+Exegesis_4 - Syntax
 
 =head1 AUTHOR
 

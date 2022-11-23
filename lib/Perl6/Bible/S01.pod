@@ -2,7 +2,7 @@
 
 =head1 TITLE
 
-Synopsis 1: Overview
+Synopsis_1 - Overview
 
 =head1 AUTHOR
 
