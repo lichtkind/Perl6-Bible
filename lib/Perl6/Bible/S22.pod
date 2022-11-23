@@ -783,6 +783,7 @@ scenario exists:
 =over 4
 
 =item A package C<p5-Foo-1-cpan+KANE> holds Foo.pm and Foo::Bar.pm
+
 =item A package C<p5-Foo-Bar-1-cpan+KANE> holds Foo::Bar.pm
 
 =back
@@ -862,6 +863,8 @@ to use Foo::Bar.pm from p6-Foo-(ANY)-(ANY)
 
 =back
 
+=back
+
 The only noticable downsides to this approach are the extension of the
 language keywords, and the occasional requirement on the user to identify
 which package a certain module should come from. The latter may actually
@@ -895,7 +898,7 @@ what the code does -- any ambiguities can be presented to the user and edited
 manually in the C<META.info>.
 
 
-
+=cut
 
 __END__
 

@@ -3,7 +3,7 @@ use 5.000;
 use strict;
 use File::Spec;
 
-our $VERSION = '0.39';
+our $VERSION = '0.40';
 
 sub new {
     my $class = shift;

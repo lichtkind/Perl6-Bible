@@ -1,7 +1,7 @@
 
 =encoding utf8
 
-=head1 Title
+=head1 NAME
 
 Synopsis 29 - Builtin Functions
 

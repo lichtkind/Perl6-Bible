@@ -1,7 +1,7 @@
 
 =encoding utf8
 
-=head1 Title
+=head1 NAME
 
 DRAFT: Synopsis_16 - IPC / IO / Signals
 

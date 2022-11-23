@@ -1,5 +1,11 @@
+version: 0.40
+date: Wed Nov 23 20:00 2022
+changes:
+- fix more POD
+- more and better tests
+---
 version: 0.39
-date: Tue Nov 22 23:30 2022
+date: Wed Nov 23 11:00 2022
 changes:
 - fix POD
 ---

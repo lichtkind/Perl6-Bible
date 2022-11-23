@@ -18,17 +18,17 @@ Damian Conway <L<C<damian@conway.org>|mailto:damian@conway.org>>
     Last Modified:  25 Apr 2007
 
 
-=head1 Perldoc
+=head1 Pod
 
-Perldoc is an easy-to-use markup language with a simple, consistent
-underlying document object model. Perldoc can be used for writing
-language documentation, for documenting programs and modules, as well as
-for other types of document composition.
+Pod is an easy-to-use markup language with a simple, consistent underlying
+document object model. Pod can be used for writing language documentation,
+for documenting programs and modules, as well as for other types of document
+composition.
 
-Perldoc allows for multiple syntactic I<dialects>, all of which map onto
-the same set of standard document objects. The standard dialect is named
-"Pod".
-
+Pod is an evolution of Perl 5's Plain Ol' Documentation (POD) markup.
+Compared to POD, Perl 6's Pod is much more uniform, somewhat more compact,
+and considerably more expressive. The Pod dialect also differs in that it
+is a purely descriptive mark-up notation, with no presentational components.
 
 =head1 The Pod Dialect
 
@@ -41,11 +41,11 @@ notation, with no presentational components.
 
 =head2 General syntactic structure
 
-Pod documents are specified using D<directives>, which are used to
+Pod documents are specified using B<directives>, which are used to
 declare configuration information and to delimit blocks of textual content.
 Every directive starts with an equals sign (C<=>) in the first column.
 
-The content of a document is specified within one or more D<blocks>. Every
+The content of a document is specified within one or more B<blocks>. Every
 Pod block may be declared in any of three equivalent forms:
 L<I<delimited style>|#Delimited blocks>, L<I<paragraph style>|#Paragraph
 blocks>, or L<I<abbreviated style>|#Abbreviated blocks>.
@@ -65,7 +65,7 @@ always reverts to "ambient" at the end of each Pod directive or block.
 To cause the parser to remain in Pod mode, you must enclose the desired
 Pod region in a C<pod> block:
 
-    B<=begin pod>
+    =begin pod
 
     =head1 A heading
 
@@ -73,7 +73,7 @@ Pod region in a C<pod> block:
 
         $this = pod('also');  # Specifically, a code block
 
-    B<=end pod>
+    =end pod
 
 Alternatively you can indicate an entire file contains only Pod, by
 giving it a C<.pod> suffix.
@@ -82,9 +82,9 @@ giving it a C<.pod> suffix.
 =head3 Delimited blocks
 
 Delimited blocks are bounded by C<=begin> and C<=end> markers, both of
-which are followed by a valid identifierN<A valid identifier is a
+which are followed by a valid identifier I<A valid identifier is a
 sequence of alphanumerics and/or underscores, beginning with an
-alphabetic or underscore>, which is the D<typename> of the block. Typenames
+alphabetic or underscore>, which is the B<typename> of the block. Typenames
 that are entirely lowercase (for example: C<=begin head1>) or entirely
 uppercase (for example: C<=begin SYNOPSIS>) are reserved.
 
@@ -93,7 +93,7 @@ configuration information for the block. This information is used in
 different ways by different types of blocks, but is always specified using
 Perl6-ish option pairs. That is, any of:
 
-=for table :nested
+
   Value is...      Specify with...      Or with...      Or with...
   ===============  ==================   ==============  ======================
   Boolean (true)   C«:key»              C«:key(1)»      C«key => 1»
@@ -123,10 +123,12 @@ L<semantic|#Semantic blocks> blocks.
 The general syntax is:
 
 =begin code :allow< R >
+
      =begin R<BLOCK_TYPE>  R<OPTIONAL CONFIG INFO>
      =                  R<OPTIONAL EXTRA CONFIG INFO>
      R<BLOCK CONTENTS>
      =end R<BLOCK_TYPE>
+     
 =end code
 
 For example:
@@ -167,9 +169,11 @@ followed by the name of the block and optional configuration
 information. The general syntax is:
 
 =begin code :allow< R >
+
      =for R<BLOCK_TYPE>  R<OPTIONAL CONFIG INFO>
      =                R<OPTIONAL EXTRA CONFIG INFO>
      R<BLOCK DATA>
+     
 =end code
 
 For example:
